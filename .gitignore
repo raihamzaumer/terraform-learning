@@ -1,0 +1,11 @@
+# Terraform cache & state
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Local keys
+*.pem
+
+# OS files
+.DS_Store
