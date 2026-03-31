@@ -89,13 +89,41 @@ resource "aws_security_group" "my-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+resource "aws_iam_role" "ssm_role" {
+  name = "ec2-ssm-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_attach" {
+  role       = aws_iam_role.ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+  name = "ec2-ssm-profile"
+  role = aws_iam_role.ssm_role.name
+}
 #instance creation
 resource "aws_instance" "my-vpc-server" {
-    ami = "ami-07062e2a343acc423"
-    instance_type = "t2.micro"
+
+    ami = var.ami_id
+    instance_type = var.instance_type
     subnet_id = aws_subnet.public-subnet.id
     vpc_security_group_ids = [aws_security_group.my-sg.id]
     key_name               = "vpc-key-us-east2"
+     iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
     user_data = file("user_data.sh")
     tags = {

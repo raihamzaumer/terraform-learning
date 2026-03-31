@@ -10,3 +10,16 @@ variable "private_subnet_cidr" {
     default = "10.0.2.0/24"
   
 }
+variable "availability_zone" {
+    default = "us-east-1a" 
+
+}
+variable "instance_type" {
+    
+    default = "t2.micro"
+
+}
+variable "ami_id" {
+    default = "ami-07062e2a343acc423"
+
+}
